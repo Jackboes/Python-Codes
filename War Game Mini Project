@@ -1,1 +1,86 @@
+import random
 
+suits = ("Hearts","Diamonds","Clubs","Spades")
+ranks = ("Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Jack","Queen","King","Ace")
+vaules = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7, 'Eight':8, 'Nine':9, 'Ten':10, 'Jack':10,
+         'Queen':10, 'King':10, 'Ace':11}
+
+class Card:
+    def __init__(self,suit,rank):
+        self.suit = suit
+        self.rank = rank 
+        self.values = vaules[rank]
+        
+    def __str__(self):
+        return self.rank + "of" + self.suit
+    
+class Deck:
+    def __init__(self):
+        self.deck = []
+        for suit in suits:
+            for rank in ranks:
+                self.deck.append(Card(suit,rank))
+                
+    
+    def shuffle(self):
+        random.shuffle(self.deck)
+    
+    def deal_one(self):
+        return self.deck.pop()
+            
+
+class Player:
+    def __init__(self,name):
+        self.name = name
+        self.deck = []
+        
+    def remove_card(self):
+        return self.deck.pop(0)
+    
+    def add_card(self):
+        self.deck.append(Card)
+        self.value+= vaules[Card.rank]
+    
+    def __str__(self):
+        return f"The Player {self.name} has {len(self.deck)} cards."
+    
+
+# Game setup
+
+player_one = Player("One")
+player_two = Player("Two")
+
+new_deck = Deck()
+new_deck.shuffle()
+
+for x in range(26):
+    player_one.add_card(new_deck.deal_one())
+    player_two.add_card(new_deck.deal_one())
+
+round_num = 0
+    
+game_on = True
+while game_on:
+    round_num += 1
+    
+    if len(player_one.deck) == 0:
+        print("Player 2 wins the game!.")
+        game_on = False
+        
+    elif len(player_two.deck) == 0:
+        print("Player 1 wins the game!.")
+        game_on = False
+        
+# Start a new round
+
+card1 = player_one.remove_card()
+card2 = player_two.remove_card()
+
+if card1.rank > card2.rank:
+    player_one.add_card(card1)
+    player_one.add_card(card2)
+else:
+    player_two.add_card(card1)
+    player_two.add_card(card2)
+    
+    
