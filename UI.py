@@ -16,8 +16,6 @@ for x in range(26):
     player_one.add_card(new_deck.deal_one())
     player_two.add_card(new_deck.deal_one())
 
-
-
 window.geometry("800x600") # By this I can edit the GUI window size as per user convience.
 window.title("War : The Card Game.")
 
@@ -89,8 +87,12 @@ result_label = Label(window, text="", fg="#1E140A", bg="#EEEBE6",font=("Times Ne
 result_label.place(relx=0.5, y=420, anchor="center")
 
 def update_count():
-    player_one_count.config(text = f"Cards: {len(player_one.deck) + len(player_one_cards)}")
-    player_two_count.config(text = f"Cards: {len(player_two.deck) + len(player_two_cards)}")
+    
+    card_player_one_update = len(player_one.deck) - len(player_one_cards)
+    card_player_two_update = len(player_two.deck) - len(player_two_cards)
+    
+    player_one_count.config(text = f"Cards: {card_player_one_update}")
+    player_two_count.config(text = f"Cards: {card_player_two_update}")
 
 player_one_card = Label(window,bg="#EEEBE6")
 player_one_card.place(x=50,y=250)
@@ -117,9 +119,10 @@ def show_card(label,card):
     label.image = photo
 
 
-player_one_cards = []
-
-player_two_cards = []
+player_one_cards = [] # This is basically the list of cards(of player 1) which are on the table 
+# player_one.deck = the cards which player one has in his hands.
+# player_two.deck = the cards which player two has in his hands.
+player_two_cards = [] # This is basically the list of cards(of player 2) which are on the table
 
 round_num = 0
 at_war = False
@@ -127,6 +130,10 @@ def click():
     print("clicked")
     
     global round_num, at_war
+    
+    if len(player_one.deck) == 0 or len(player_two.deck) == 0:
+        return
+    
     round_num += 1
     round_num_label.config(text=f"Round: {round_num}")
     
@@ -149,12 +156,18 @@ def click():
             player_one.add_card(card)
         player_one_cards.clear()
         player_two_cards.clear()
+        update_count()
+        
         if at_war:
             result_label.config(text="Arinjay Wins the War!")
             at_war = False
         else:
             result_label.config(text=f"Arinjay Wins {round_num} Round!")
-    
+        if len(player_two.deck) == 0:
+            result_label.config(text="Arinjay Wins the Game!.")
+            button.config(state="disabled")
+            button2.config(state="disabled")    
+            
     # If player 2 wins the round the he gets his as well as player 1 cards.
     elif player_two_cards[-1].value > player_one_cards[-1].value:
         for card in player_two_cards:
@@ -163,47 +176,49 @@ def click():
             player_two.add_card(card)
         player_one_cards.clear()
         player_two_cards.clear()
+        update_count()
+        
         if at_war:
             result_label.config(text="Vedant Wins the War!")
             at_war = False
         else:
             result_label.config(text=f"Vedant Wins {round_num} Round!")
+        if len(player_one.deck) == 0:
+            result_label.config(text="Vedant Wins the Game!.")
+            button.config(state="disabled")
+            button2.config(state="disabled")
         
     else:
         at_war = True
         
-        result_label.config(text="WAR!")
-        
-        if len(player_one.deck) < 5:
-            result_label.config(text="Vedant has won the WAR!.")
+        if len(player_one.deck) < 5 and len(player_two.deck) < 5: # This case means both players have less than 5 cards and War just came then the one who has more cards but less than 5 wins the match.
+            if len(player_one.deck) > len(player_two.deck):
+                result_label.config(text="Arinjay Wins!")
+            else:
+                result_label.config(text="Vedant Wins!")
+            button.config(state="disabled")
+            button2.config(state="disabled")
+            return
+                
+        elif len(player_one.deck) <= 5:
+            result_label.config(text="Vedant wins the WAR!.Arinjay is too weak to fight the war.")
             button.config(state="disabled")
             button2.config(state="disabled")
             return
         
-        elif len(player_two.deck) < 5:
-            result_label.config(text="Arinjay has won the WAR!.")
+        elif len(player_two.deck) <= 5:
+            result_label.config(text="Arinjay wins the WAR!.Vedant is too weak to fight the war.")
             button.config(state="disabled")
             button2.config(state="disabled")
             return
         
         else:
-            for x in range(5):
+            for _ in range(5): # This loop means I do not care about the iterartions I just want it to run 5 times that it.
                 player_one_cards.append(player_one.remove_card())
                 player_two_cards.append(player_two.remove_card())
             result_label.config(text="WAR! Draw again.")
             update_count()
-    # Game over 
-    if len(player_one.deck) == 0:
-        result_label.config(text="Vedant Wins the Game!.")
-        button.config(state="disabled")
-        button2.config(state="disabled")
         
-    elif len(player_two.deck) == 0:
-        result_label.config(text="Arinjay Wins the Game!.")
-        button.config(state="disabled")
-        button2.config(state="disabled")
-    
-    update_count()
             
 img1 = Image.open("draw_card.png")
 img1 = img1.resize((250,80))
