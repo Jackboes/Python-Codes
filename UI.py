@@ -88,11 +88,8 @@ result_label.place(relx=0.5, y=420, anchor="center")
 
 def update_count():
     
-    card_player_one_update = len(player_one.deck) - len(player_one_cards)
-    card_player_two_update = len(player_two.deck) - len(player_two_cards)
-    
-    player_one_count.config(text = f"Cards: {card_player_one_update}")
-    player_two_count.config(text = f"Cards: {card_player_two_update}")
+    player_one_count.config(text = f"Cards: {len(player_one.deck)}")
+    player_two_count.config(text = f"Cards: {len(player_two.deck)}")
 
 player_one_card = Label(window,bg="#EEEBE6")
 player_one_card.place(x=50,y=250)
@@ -126,6 +123,32 @@ player_two_cards = [] # This is basically the list of cards(of player 2) which a
 
 round_num = 0
 at_war = False
+
+def restart_game():
+    global round_num, at_war, player_one, player_two, player_one_cards, player_two_cards
+
+    round_num = 0
+    at_war = False
+    player_one_cards.clear()
+    player_two_cards.clear()
+
+    player_one = Player("Arinjay")
+    player_two = Player("Vedant")
+
+    new_deck = Deck()
+    new_deck.shuffle()
+    for x in range(26):
+        player_one.add_card(new_deck.deal_one())
+        player_two.add_card(new_deck.deal_one())
+
+    update_count()
+    round_num_label.config(text="Round: ")
+    result_label.config(text="")
+    player_one_card.config(image="")
+    player_two_card.config(image="")
+    button.config(state="normal")
+    button2.config(state="normal")
+
 def click():
     print("clicked")
     
@@ -196,18 +219,21 @@ def click():
                 result_label.config(text="Arinjay Wins!")
             else:
                 result_label.config(text="Vedant Wins!")
+            at_war = False
             button.config(state="disabled")
             button2.config(state="disabled")
             return
                 
-        elif len(player_one.deck) <= 5:
+        elif len(player_one.deck) <= 6:
             result_label.config(text="Vedant wins the WAR!.Arinjay is too weak to fight the war.")
+            at_war = False
             button.config(state="disabled")
             button2.config(state="disabled")
             return
         
-        elif len(player_two.deck) <= 5:
+        elif len(player_two.deck) <= 6:
             result_label.config(text="Arinjay wins the WAR!.Vedant is too weak to fight the war.")
+            at_war = False
             button.config(state="disabled")
             button2.config(state="disabled")
             return
@@ -235,7 +261,7 @@ button = Button(window,
                 )
 
 button2 = Button(window,
-                 command = click,
+                 command = restart_game,
                  font = (30),
                  image = p2)
 
@@ -244,3 +270,5 @@ button.place(relx = 0.15, rely = 0.88,anchor = "center")
 button2.place(relx = 0.85, rely = 0.88, anchor = "center")
 
 window.mainloop()
+
+
